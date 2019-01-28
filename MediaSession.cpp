@@ -170,7 +170,11 @@ MediaKeySession::MediaKeySession(const uint8_t *f_pbInitData, uint32_t f_cbInitD
     , m_pbChallenge(nullptr)
     , m_cbChallenge(0)
     , m_pchSilentURL(nullptr) 
-    , m_piCallback(nullptr) {
+    , m_piCallback(nullptr)
+    , m_decryptInited(false) {
+    
+    m_oDecryptContext = new DRM_DECRYPT_CONTEXT;
+    
   DRM_RESULT dr = DRM_SUCCESS;
   DRM_ID oSessionID;
   DRM_DWORD cchEncodedSessionID = SIZEOF(m_rgchSessionID);
@@ -248,6 +252,10 @@ MediaKeySession::~MediaKeySession(void) {
   SAFE_OEM_FREE(m_poAppContext);
 
   m_eKeyState = KEY_CLOSED;
+  
+  delete m_oDecryptContext;
+  m_oDecryptContext = nullptr;
+  
   printf("Destructing PlayReady Session [%p]\n", this);
 }
 
@@ -370,7 +378,7 @@ void MediaKeySession::Update(const uint8_t *m_pbKeyMessageResponse, uint32_t  m_
                         NO_OF(g_rgpdstrRights),
                         _PolicyCallback,
                         NULL,
-                        &m_oDecryptContext));
+                        m_oDecryptContext));
 
   m_eKeyState = KEY_READY;
 
@@ -418,7 +426,7 @@ CDMi_RESULT MediaKeySession::Decrypt(
   uint8_t *ivData = (uint8_t *) f_pbIV;
   uint8_t temp;
 
-  ChkDR(Drm_Reader_InitDecrypt(&m_oDecryptContext, NULL, 0));
+  ChkDR(Drm_Reader_InitDecrypt(m_oDecryptContext, NULL, 0));
   // FIXME: IV bytes need to be swapped ???
   for (uint32_t i = 0; i < f_cbIV / 2; i++) {
     temp = ivData[i];
@@ -427,7 +435,7 @@ CDMi_RESULT MediaKeySession::Decrypt(
   }
 
   MEMCPY(&oAESContext.qwInitializationVector, ivData, f_cbIV);
-  ChkDR(Drm_Reader_Decrypt(&m_oDecryptContext, &oAESContext, (DRM_BYTE *) payloadData,  payloadDataSize));
+  ChkDR(Drm_Reader_Decrypt(m_oDecryptContext, &oAESContext, (DRM_BYTE *) payloadData,  payloadDataSize));
      
   // Call commit during the decryption of the first sample.
   if (!m_fCommit) {

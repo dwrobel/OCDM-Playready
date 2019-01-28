@@ -169,8 +169,6 @@ public:
 private:
     static DRM_RESULT DRM_CALL _PolicyCallback(const DRM_VOID *, DRM_POLICY_CALLBACK_TYPE f_dwCallbackType, const DRM_VOID *);
 
-    DRM_DECRYPT_CONTEXT m_oDecryptContext;
-
     DRM_BYTE *m_pbOpaqueBuffer;
     DRM_DWORD m_cbOpaqueBuffer;
 
@@ -187,11 +185,9 @@ private:
     std::string _contentIdExt; // TODO: remove this one
 
 private:
-	std::shared_ptr<DRM_DECRYPT_CONTEXT> decryptContext_;
 	std::vector<uint8_t> mDrmHeader;
 	std::vector<uint8_t> mNounce;
     std::string mContentId;
-	//std::vector<char> mContentId2;
     OcdmLicenseType mLicenseType; // TODO: don't use netflix enum
     uint32_t mSessionId;
     OcdmSessionState mSessionState; // TODO: don't use netflix stuff
@@ -202,6 +198,8 @@ private:
 protected:
     DRM_BOOL m_fCommit;
     DRM_APP_CONTEXT *m_poAppContext;
+    DRM_DECRYPT_CONTEXT *m_oDecryptContext;
+    bool m_decryptInited; // TODO: keep track of this via pointer being != NULL?
 };
 
 } // namespace CDMi
