@@ -101,7 +101,8 @@ public:
             uint32_t contentIdLength,
             LicenseTypeExt licenseType,
             const uint8_t drmHeader[],
-            uint32_t drmHeaderLength);
+            uint32_t drmHeaderLength,
+            DRM_APP_CONTEXT * poAppContext);
 
     ~MediaKeySession();
 
@@ -168,7 +169,6 @@ public:
 private:
     static DRM_RESULT DRM_CALL _PolicyCallback(const DRM_VOID *, DRM_POLICY_CALLBACK_TYPE f_dwCallbackType, const DRM_VOID *);
 
-    DRM_APP_CONTEXT *m_poAppContext;
     DRM_DECRYPT_CONTEXT m_oDecryptContext;
 
     DRM_BYTE *m_pbOpaqueBuffer;
@@ -201,6 +201,7 @@ private:
 
 protected:
     DRM_BOOL m_fCommit;
+    DRM_APP_CONTEXT *m_poAppContext;
 };
 
 } // namespace CDMi
