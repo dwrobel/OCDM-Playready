@@ -26,11 +26,6 @@ target_include_directories(${MODULE_NAME}
     "${CMAKE_SYSROOT}/usr/include/${NAMESPACE}"
     ${PLAYREADY_INCLUDE_DIRS})
 
-
-target_link_libraries(${MODULE_NAME}
-    PRIVATE
-        PlayReady::PlayReady)
-
 # Library installation section
 set_target_properties(${MODULE_NAME} PROPERTIES SUFFIX ".drm")
 set_target_properties(${MODULE_NAME} PROPERTIES PREFIX "")
