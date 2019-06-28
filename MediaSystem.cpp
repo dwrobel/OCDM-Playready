@@ -23,7 +23,7 @@
 #include <string.h>
 
 #include <cdmi.h>
-#include <core/core.h>
+#include <WPEFramework/core/core.h>
 
 #include "ScopedMutex.h"
 
